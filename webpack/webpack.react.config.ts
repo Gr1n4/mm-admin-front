@@ -88,7 +88,7 @@ const config: Configuration = {
   output: {
     path: distDir,
     filename: '[name].js',
-    publicPath: 'http://localhost:4000/',
+    publicPath: __DEV__ ? 'http://localhost:4000/' : 'https://addmods.fun',
   },
   plugins: [
     new HtmlWebpackPlugin({
