@@ -33,7 +33,7 @@ export const ModCreatePage: FC = () => {
           isRevarded: false,
           isRevardedEng: false,
           picture: null,
-          file: new FileList(),
+          file: [],
           tags: [],
         }}
         onSubmit={handleFormSubmit}
