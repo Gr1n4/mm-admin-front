@@ -24,7 +24,7 @@ export const AuthConfirmStaffPage: FC = () => {
     // eslint-disable-next-line react/jsx-no-undef
     <Container maxWidth="sm">
       <Typography sx={{ margin: '2rem 0' }} variant="h3" textAlign="center">
-        Авторизация
+        Завершение регистрации
       </Typography>
       <form onSubmit={handleSubmit(handleFormSubmit)}>
         <Stack spacing={4}>

@@ -37,9 +37,6 @@ export const AuthLoginPage: FC<unknown> = () => {
           <Button type="submit" variant="contained">
             Войти
           </Button>
-          <Link href="/auth/sign-up" variant="button" textAlign="center">
-            Зарегистрироваться
-          </Link>
         </Stack>
       </form>
     </Container>

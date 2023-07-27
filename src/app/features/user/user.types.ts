@@ -1,27 +1,13 @@
-import { Option, UserEntity, UserRole, UserSex } from '@/types';
+import { Option, UserEntity, UserRole } from '@/types';
 
 export enum StaffRole {
-  DOCTOR = 'DOCTOR',
   ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
 }
 
 export interface StaffCreatePayload {
   email: string;
   role: StaffRole;
-  firstName: string;
-  lastName: string;
-  surename: string;
-  phoneNumber: string;
-  sex: UserSex;
-  birthDate: Date;
-  country: string;
-  city: string;
-  street: string;
-  house: string;
-  appartment: string;
-  passport: string;
-  medicalInsurance: string;
-  departamentIds?: string[];
 }
 
 export type StaffUpdatePayload = Partial<StaffCreatePayload>;
@@ -32,5 +18,5 @@ export interface UserSearchPayload {
 
 export interface UserState {
   all: UserEntity[];
-  doctor: Option<UserEntity>;
+  user: Option<UserEntity>;
 }

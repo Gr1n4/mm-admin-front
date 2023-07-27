@@ -37,6 +37,7 @@ export const ModEditPage: FC = () => {
       </Typography>
       <ModForm
         defaultValues={{
+          type: mod.type,
           nameRu: mod.name.ru,
           nameEn: mod.name.en,
           descRu: mod.desc.ru,
@@ -52,6 +53,7 @@ export const ModEditPage: FC = () => {
           picture: mod.picture.url,
           file: [],
           tags: mod.tags,
+          generationKey: mod.generationKey,
         }}
         onSubmit={handleFormSubmit}
       />

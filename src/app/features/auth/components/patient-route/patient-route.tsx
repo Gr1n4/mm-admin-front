@@ -17,8 +17,8 @@ export const PatientRoute: FC<{ redirect: boolean; element: ReactNode; role: Use
       </Box>
     );
   }
-  // if (!accept) {
-  //   return redirect ? <Navigate to="/auth" /> : <Typography variant="h1">Not Found page</Typography>;
-  // }
+  if (!accept) {
+    return redirect ? <Navigate to="/auth" /> : <Typography variant="h1">Not Found page</Typography>;
+  }
   return element as ReactElement;
 };

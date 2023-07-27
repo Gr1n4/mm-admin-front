@@ -6,6 +6,7 @@ config({ path: '../.env' });
 export const __DEV__ = process.env.NODE_ENV === 'development';
 export const __PROD__ = process.env.NODE_ENV === 'production';
 export const __BASE_URL__ = __DEV__ ? "'./'" : "'./'";
+export const __DOMAIN__ = __DEV__ ? "'http://localhost:4000'" : "'https://admin.addmods.fun'";
 export const __API_URL__ = __DEV__ ? "'http://localhost:1337'" : "'https://addmods.fun/api'";
 
 export const rootDir = resolve(__dirname, '../');

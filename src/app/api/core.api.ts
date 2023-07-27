@@ -9,11 +9,10 @@ const defaultOptions = {
 
 async function success<T>(data: Response): Promise<T> {
   const response = await data.json();
-  // if (response.success) {
-  //   return response.data;
-  // }
-  // throw response.error;
-  return response;
+  if (data.ok) {
+    return response;
+  }
+  throw response;
 }
 
 export class CoreApi {

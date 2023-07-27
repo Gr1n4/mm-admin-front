@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { useDispatch } from 'react-redux';
 import { ModForm } from './components';
 import { createModAction } from './mod.action';
-import { ModCreatePayload } from './mod.types';
+import { ModCreatePayload, ModType } from './mod.types';
 
 export const ModCreatePage: FC = () => {
   const dispatch = useDispatch();
@@ -20,6 +20,7 @@ export const ModCreatePage: FC = () => {
       </Typography>
       <ModForm
         defaultValues={{
+          type: ModType.MOD,
           nameRu: '',
           nameEn: '',
           descRu: '',
@@ -35,6 +36,7 @@ export const ModCreatePage: FC = () => {
           picture: null,
           file: [],
           tags: [],
+          generationKey: '',
         }}
         onSubmit={handleFormSubmit}
       />

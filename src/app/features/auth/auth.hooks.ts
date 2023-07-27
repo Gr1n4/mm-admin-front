@@ -2,6 +2,7 @@ import { UserRole } from '@/types';
 import { getSingleLoadingSelector } from '@ro-loading';
 import { useSelector } from 'react-redux';
 import { getUserSelector, isLogedinSelector } from './auth.selectors';
+import { isAccept } from './auth.utils';
 
 interface AuthHook {
   isLoading: boolean;
@@ -23,17 +24,9 @@ export function useAuth(): AuthHook {
 export function useAuthRole(role: UserRole): AuthRoleHook {
   const { isLogedin, isLoading } = useAuth();
   const user = useSelector(getUserSelector);
-  if (role === UserRole.PATIENT) {
-    return { isLogedin, isLoading, accept: isLogedin };
-  }
   if (!user) {
     return { isLogedin, isLoading, accept: false };
   }
-  if (role === UserRole.DOCTOR) {
-    if (user.role === UserRole.DOCTOR || user.role === UserRole.ADMIN) {
-      return { isLogedin, isLoading, accept: isLogedin };
-    }
-    return { isLogedin, isLoading, accept: false };
-  }
-  return { isLogedin, isLoading, accept: user.role === UserRole.ADMIN };
+  const accept = isAccept(user.role, role);
+  return { isLogedin, isLoading, accept };
 }

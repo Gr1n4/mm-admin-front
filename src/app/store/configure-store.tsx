@@ -1,4 +1,4 @@
-import { AuthApi, HomeApi, ModApi, TicketApi, UserApi, VocabularyApi } from '@/features';
+import { AuthApi, HomeApi, ModApi, UserApi } from '@/features';
 import { RoDependencies } from '@/types';
 import { browserHistory } from '@/utils';
 import { applyMiddleware, createStore, Middleware, Store } from 'redux';
@@ -18,9 +18,7 @@ function configureDependency(): RoDependencies {
     history: browserHistory,
     authApi: new AuthApi(),
     homeApi: new HomeApi(),
-    ticketApi: new TicketApi(),
     userApi: new UserApi(),
-    vocabularyApi: new VocabularyApi(),
     modApi: new ModApi(),
   };
 }

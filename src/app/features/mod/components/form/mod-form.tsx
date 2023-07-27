@@ -1,13 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useDispatch } from 'react-redux';
 
 import { Option } from '@/types';
-import { Box, Button, Checkbox, Chip, FormControlLabel, Stack, TextField } from '@mui/material';
+import { Box, Button, Checkbox, Chip, FormControlLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { ImageUploader } from '@/components';
-import { ModCreatePayload } from '../../mod.types';
+import { ModCreatePayload, ModType } from '../../mod.types';
 
 interface CreateForm {
+  type: ModType;
   nameRu: string;
   nameEn: string;
   descRu: string;
@@ -18,11 +18,12 @@ interface CreateForm {
   cost: string;
   priority: string;
   isNew: boolean;
-  isRevarded: boolean;
-  isRevardedEng: boolean;
+  isRewarded: boolean;
+  isRewardedEng: boolean;
   tags: string[];
   picture?: Option<File | string>;
   file?: FileList;
+  generationKey: string;
 }
 
 interface ModFormProps {
@@ -58,6 +59,7 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
   const handleFormSubmit = (data: CreateForm): void => {
     console.log('data: %o', data);
     const {
+      type,
       nameRu,
       nameEn,
       descRu,
@@ -68,13 +70,15 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
       cost,
       priority,
       isNew,
-      isRevarded,
-      isRevardedEng,
+      isRewarded,
+      isRewardedEng,
       tags,
       file,
       picture,
+      generationKey,
     } = data;
     const newData: ModCreatePayload = {
+      type,
       name: { ru: nameRu, en: nameEn },
       desc: { ru: descRu, en: descEn },
       videoUrl: { ru: videoUrlRu, en: videoUrlEn },
@@ -82,9 +86,10 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
       cost,
       priority: parseInt(priority, 10),
       isNew,
-      isRevarded,
-      isRevardedEng,
+      isRewarded,
+      isRewardedEng,
       tags,
+      generationKey,
     };
     if (file && file[0]) {
       newData.file = file[0];
@@ -107,6 +112,18 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Stack spacing={4}>
+        <Controller
+          name="type"
+          control={control}
+          render={({ field }) => (
+            <Select labelId="type-label" id="type" label="Тип" {...field}>
+              <MenuItem value={ModType.MOD}>Мод</MenuItem>
+              <MenuItem value={ModType.SEED}>Сид</MenuItem>
+              <MenuItem value={ModType.MAP}>Карта</MenuItem>
+              <MenuItem value={ModType.SKIN}>Скин</MenuItem>
+            </Select>
+          )}
+        />
         <TextField label="Название на русском" {...register('nameRu', { required: true })} />
         <TextField label="Название на английском" {...register('nameEn', { required: true })} />
         <TextField label="Описание на русском" multiline maxRows={4} {...register('descRu', { required: true })} />
@@ -117,8 +134,8 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
         <TextField label="Цена" {...register('cost')} />
         <TextField label="Приоритет" {...register('priority')} />
         <FormControlLabel control={<Checkbox {...register('isNew')} />} label="Новый" />
-        <FormControlLabel control={<Checkbox {...register('isRevarded')} />} label="Награжден" />
-        <FormControlLabel control={<Checkbox {...register('isRevardedEng')} />} label="Награжден en" />
+        <FormControlLabel control={<Checkbox {...register('isRewarded')} />} label="Награжден" />
+        <FormControlLabel control={<Checkbox {...register('isRewardedEng')} />} label="Награжден en" />
         <Box>
           <TextField label="Тэги" value={tagItem} onChange={(e) => setTagItem(e.target.value)} />
           <Button onClick={handleAddTag}>Добавить тэг</Button>
@@ -131,7 +148,11 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
           control={control}
           render={({ field }) => <ImageUploader title="Картинка" url={pictureUrl} onChange={field.onChange} />}
         />
-        <input type="file" id="file" {...register('file')} />
+        {values.type === ModType.SEED ? (
+          <TextField label="Ключ генерации" {...register('generationKey')} />
+        ) : (
+          <input type="file" id="file" {...register('file')} />
+        )}
         <Button type="submit" onClick={handleSubmit(handleFormSubmit)}>
           Создать
         </Button>

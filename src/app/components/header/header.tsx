@@ -1,15 +1,17 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { FC, Fragment } from 'react';
+import { FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { logoutAuthAction } from '@/features/auth/auth.actions';
 import { getUserSelector, isLogedinSelector } from '@/features/auth/auth.selectors';
-import { Box, Container, Link, styled, Typography } from '@mui/material';
+import { Box, Container, Link, Stack, styled, Typography } from '@mui/material';
 import { UserRole } from '@/types';
+import { isAccept } from '@/features';
 
 const Root = styled('header')(({ theme }) => {
+  console.log('theme: %o', theme);
   return {
-    backgroundColor: theme.palette.primary.light,
+    backgroundColor: 'rgb(28, 37, 54);',
     height: '7rem',
     display: 'flex',
     alignItems: 'center',
@@ -28,27 +30,20 @@ export const Header: FC = () => {
     <Root>
       <Container sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Link sx={{ marginRight: '2rem' }} href="/">
-            <Typography variant="h3">Minecraft Mod Admin Panel</Typography>
-          </Link>
-          <Link href="/mod">
-            <Typography variant="body1">Моды</Typography>
+          <Link sx={{ marginRight: '4rem' }} href="/">
+            <Typography variant="h6">MAAP</Typography>
           </Link>
           {isLogedin ? (
-            <Fragment>
-              <Link href="/user/doctors">
-                <Typography variant="body1">Доктора</Typography>
-              </Link>
-              {user?.role === UserRole.ADMIN ? (
-                <Link href="/admin">
-                  <Typography variant="body1">Админ</Typography>
-                </Link>
-              ) : user?.role === UserRole.DOCTOR ? (
-                <Link href="/visit">
-                  <Typography variant="body1">Прием</Typography>
+            <Stack spacing={4} direction="row">
+              {isAccept(user!.role, UserRole.ADMIN) ? (
+                <Link href="/user">
+                  <Typography variant="body1">Персонал</Typography>
                 </Link>
               ) : null}
-            </Fragment>
+              <Link href="/mod/mod">
+                <Typography variant="body1">Моды</Typography>
+              </Link>
+            </Stack>
           ) : null}
         </Box>
         <Box>

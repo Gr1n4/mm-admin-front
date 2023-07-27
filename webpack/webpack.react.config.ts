@@ -4,7 +4,7 @@ import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { Configuration, DefinePlugin } from 'webpack';
 
-import { __BASE_URL__, __DEV__, __PROD__, rootDir, srcDesktopDir, distDir, __API_URL__ } from './constants';
+import { __BASE_URL__, __DEV__, __PROD__, rootDir, srcDesktopDir, distDir, __API_URL__, __DOMAIN__ } from './constants';
 import { aliasDefaultConfig } from './common.config';
 
 declare module 'webpack' {
@@ -88,7 +88,7 @@ const config: Configuration = {
   output: {
     path: distDir,
     filename: '[name].js',
-    publicPath: __DEV__ ? 'http://localhost:4000/' : 'https://addmods.fun',
+    publicPath: __DOMAIN__.slice(1, -1),
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -101,6 +101,7 @@ const config: Configuration = {
       __PROD__,
       __BASE_URL__,
       __API_URL__,
+      __DOMAIN__,
     }),
   ],
 };

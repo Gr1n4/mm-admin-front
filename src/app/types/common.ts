@@ -2,7 +2,7 @@ import { BrowserHistory } from 'history';
 import { Epic as EpicRo } from 'redux-observable';
 import { Action } from 'typescript-fsa';
 
-import { AuthApi, HomeApi, ModApi, TicketApi, UserApi, VocabularyApi } from '@/features';
+import { AuthApi, HomeApi, ModApi, UserApi } from '@/features';
 import { AuthState } from '@/features/auth/auth.types';
 import { UserState } from '@/features/user/user.types';
 import { ModState } from '@/features/mod/mod.types';
@@ -24,9 +24,7 @@ export interface ResponseError {
 export interface RoDependencies {
   authApi: AuthApi;
   homeApi: HomeApi;
-  ticketApi: TicketApi;
   userApi: UserApi;
-  vocabularyApi: VocabularyApi;
   modApi: ModApi;
   history: BrowserHistory;
 }

@@ -1,6 +1,9 @@
 export function toFormData<T extends object>(body: T, exept?: string[]): FormData {
   const result = new FormData();
   for (const [key, value] of Object.entries(body)) {
+    if (value === undefined) {
+      continue;
+    }
     if (exept && exept.includes(key)) {
       result.append(key, value);
       continue;

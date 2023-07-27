@@ -5,4 +5,3 @@ import { UserState } from './user.types';
 export const userSelector = <T extends { user: UserState }>(state: T) => state.user;
 
 export const getUsersSelector = createSelector(userSelector, ({ all }) => all);
-export const getDoctorSelector = createSelector(userSelector, ({ doctor }) => doctor);

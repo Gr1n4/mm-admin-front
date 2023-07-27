@@ -1,10 +1,14 @@
 import { CoreApi, toFormData } from '@/api';
 import { Observable } from 'rxjs';
-import { ModCreatePayload, ModEntity, ModUpdatePayload } from './mod.types';
+import { ModCreatePayload, ModEntity, ModUpdatePayload, SortedModResult, SortedUpdatePayload } from './mod.types';
 
 export class ModApi extends CoreApi {
   getById(id: string): Observable<ModEntity> {
     return this.get(`/mod/${id}`);
+  }
+
+  removeById(id: string): Observable<void> {
+    return this.delete(`/mod/${id}`);
   }
 
   create(body: ModCreatePayload): Observable<ModEntity> {
@@ -17,5 +21,13 @@ export class ModApi extends CoreApi {
 
   feed(): Observable<ModEntity[]> {
     return this.get('/mod');
+  }
+
+  sortedFeed(): Observable<SortedModResult> {
+    return this.get('/mod/sorted');
+  }
+
+  updateSorted({ type, ...data }: SortedUpdatePayload): Observable<void> {
+    return this.put(`/mod/sorted/${type}`, data);
   }
 }

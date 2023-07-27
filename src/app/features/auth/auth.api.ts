@@ -8,7 +8,7 @@ export class AuthApi extends CoreApi {
   }
 
   register(body: RegisterPayload): Observable<ProfileResponse> {
-    return this.post('/auth/register', body);
+    return this.post('/auth/register-super-admin', body);
   }
 
   confirmStaff(body: ConfirmStaffPayload): Observable<ProfileResponse> {

@@ -1,4 +1,4 @@
-import { BasicModel, Option, UserEntity, UserSex } from '@/types';
+import { BasicModel, Option, UserEntity } from '@/types';
 
 export interface LoginPayload {
   email: string;
@@ -13,19 +13,6 @@ export interface ConfirmStaffPayload {
 export interface RegisterPayload {
   email: string;
   password: string;
-  firstName: string;
-  lastName: string;
-  surename: string;
-  phoneNumber: string;
-  sex: UserSex;
-  birthDate: Date;
-  country: string;
-  city: string;
-  street: string;
-  house: string;
-  appartment: string;
-  passport: string;
-  medicalInsurance: string;
 }
 
 export interface SessionEntity extends BasicModel {

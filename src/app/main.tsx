@@ -12,7 +12,7 @@ import { profileAuthAction } from './features/auth/auth.actions';
 
 const rootDomNode = document.getElementById('root');
 const store = configureStore({ epic: rootEpic, middlewares: [] });
-// store.dispatch(profileAuthAction.started());
+store.dispatch(profileAuthAction.started());
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const root = createRoot(rootDomNode!);
