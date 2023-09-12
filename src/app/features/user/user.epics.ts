@@ -1,16 +1,9 @@
 import { Epic } from '@/types';
 import { createAsyncSingleLoadingEpic } from '@ro-loading';
-import { ofAsyncAction } from '@tsfsa-ro';
+import { createAsyncEpic, ofAsyncAction } from '@tsfsa-ro';
 import { combineEpics } from 'redux-observable';
 import { catchError, mergeMap, of } from 'rxjs';
-import {
-  addScheduleAction,
-  createStaffAction,
-  deleteScheduleAction,
-  getDoctorByIdAction,
-  searchUsersAction,
-  updateDoctorByIdAction,
-} from './user.action';
+import { createStaffAction, deleteUserAction, searchUsersAction } from './user.action';
 
 const createStaffEpic: Epic = (action$, _, { userApi }) =>
   action$.pipe(
@@ -34,7 +27,15 @@ const searchUsersEpic: Epic = (action$, _, { userApi }) =>
     }),
   );
 
+const deleteUserEpic = createAsyncEpic(deleteUserAction, ({ userApi }) => userApi.removeById.bind(userApi));
+
 const createLoadingEpic = createAsyncSingleLoadingEpic(createStaffAction, 'staffCreate');
 const searchLoadingEpic = createAsyncSingleLoadingEpic(searchUsersAction, 'userSearch');
 
-export const userEpic = combineEpics(createStaffEpic, searchUsersEpic, createLoadingEpic, searchLoadingEpic);
+export const userEpic = combineEpics(
+  createStaffEpic,
+  searchUsersEpic,
+  deleteUserEpic,
+  createLoadingEpic,
+  searchLoadingEpic,
+);

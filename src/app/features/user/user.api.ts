@@ -1,5 +1,5 @@
 import { CoreApi } from '@/api';
-import { ScheduleCreatePayload, ScheduleEntity, UserEntity } from '@/types';
+import { UserEntity } from '@/types';
 import { Observable } from 'rxjs';
 import qs from 'query-string';
 import { StaffCreatePayload, StaffUpdatePayload, UserSearchPayload } from './user.types';
@@ -21,11 +21,7 @@ export class UserApi extends CoreApi {
     return this.post('/auth/register-staff', body);
   }
 
-  addSchedule(body: ScheduleCreatePayload): Observable<ScheduleEntity> {
-    return this.post(`/schedule`, body);
-  }
-
-  deleteSchedule(id: string): Observable<UserEntity> {
-    return this.delete(`/schedule/${id}`);
+  removeById(id: string): Observable<void> {
+    return this.delete(`/user/${id}`);
   }
 }

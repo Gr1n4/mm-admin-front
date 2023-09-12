@@ -1,8 +1,9 @@
 import { Epic } from '@/types';
 import { createAsyncSingleLoadingEpic } from '@ro-loading';
 import { createAsyncEpic, ofAction } from '@tsfsa-ro';
+import * as R from 'ramda';
 import { combineEpics } from 'redux-observable';
-import { map } from 'rxjs';
+import { filter, map } from 'rxjs';
 import {
   createModAction,
   feedModAction,
@@ -12,7 +13,8 @@ import {
   updateModAction,
   updateSortedModAction,
 } from './mod.action';
-import { ModEntity } from './mod.types';
+
+const propId = R.map(R.prop('id'));
 
 const feedModEpic = createAsyncEpic(feedModAction, ({ modApi }) => modApi.feed.bind(modApi));
 const sortedFeedModEpic = createAsyncEpic(
@@ -22,15 +24,12 @@ const sortedFeedModEpic = createAsyncEpic(
       modApi.sortedFeed().pipe(
         map((data) => {
           return {
-            record: [...data.SKIN, ...data.MOD, ...data.SEED, ...data.MAP].reduce((acc, item) => {
-              acc[item.id] = item;
-              return acc;
-            }, {} as Record<string, ModEntity>),
+            record: R.indexBy(R.prop('id'), [...data.SKIN, ...data.MOD, ...data.SEED, ...data.MAP]),
             sortedIds: {
-              MOD: data.MOD.map(({ id }) => id),
-              SKIN: data.SKIN.map(({ id }) => id),
-              SEED: data.SEED.map(({ id }) => id),
-              MAP: data.MAP.map(({ id }) => id),
+              MOD: propId(data.MOD),
+              SKIN: propId(data.SKIN),
+              SEED: propId(data.SEED),
+              MAP: propId(data.MAP),
             },
           };
         }),
@@ -42,16 +41,25 @@ const updateSortedModEpic = createAsyncEpic(updateSortedModAction, ({ modApi }) 
 const getByIdModEpic = createAsyncEpic(getByIdModAction, ({ modApi }) => modApi.getById.bind(modApi));
 const removeByIdModEpic = createAsyncEpic(removeByIdModAction, ({ modApi }) => modApi.removeById.bind(modApi));
 
-const realodFeedAfterRemove: Epic = (action$) =>
+const reloadFeedAfterRemove: Epic = (action$) =>
   action$.pipe(
     ofAction(removeByIdModAction.done),
-    map(() => feedModAction.started()),
+    map(() => sortedFeedModAction.started()),
   );
 
-const realodFeedAfterUpdate: Epic = (action$) =>
+const reloadFeedAfterUpdate: Epic = (action$) =>
   action$.pipe(
     ofAction(updateSortedModAction.done),
-    map(() => feedModAction.started()),
+    map(() => sortedFeedModAction.started()),
+  );
+
+const navigateToMoListAfterCreateEpic: Epic = (action$, _, { history }) =>
+  action$.pipe(
+    ofAction(createModAction.done),
+    filter(({ result }) => {
+      history.replace(`/mod/${result.type.toLowerCase()}`);
+      return false;
+    }),
   );
 
 const feedModLoadingEpic = createAsyncSingleLoadingEpic(feedModAction, 'feedMod');
@@ -68,8 +76,9 @@ export const modEpic = combineEpics(
   getByIdModEpic,
   removeByIdModEpic,
 
-  realodFeedAfterRemove,
-  realodFeedAfterUpdate,
+  // reloadFeedAfterRemove,
+  reloadFeedAfterUpdate,
+  navigateToMoListAfterCreateEpic,
 
   feedModLoadingEpic,
   sortedFeedModLoadingEpic,

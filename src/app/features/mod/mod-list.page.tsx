@@ -1,13 +1,10 @@
-import { Box, CircularProgress, Container, Fab, Grid, Link, Stack, Typography } from '@mui/material';
+import { Box, CircularProgress, Container, Fab, Link, Stack, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { getSingleLoadingSelector } from '@ro-loading';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import DnDList from 'react-dnd-list';
-import { ModCard, ModDndList } from './components';
-import { feedModAction, sortedFeedModAction } from './mod.action';
-import { getFeedModSelector, getSortedIdsModSelector } from './mod.selector';
+import { ModDndList } from './components';
+import { sortedFeedModAction } from './mod.action';
 import { ModType } from './mod.types';
 
 interface ModListPageProps {
@@ -17,7 +14,6 @@ interface ModListPageProps {
 export const ModListPage: FC<ModListPageProps> = ({ type }) => {
   const dispatch = useDispatch();
   const isLoading = useSelector((state) => getSingleLoadingSelector(state, 'feedSortedMod'));
-  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(sortedFeedModAction.started());
@@ -51,9 +47,12 @@ export const ModListPage: FC<ModListPageProps> = ({ type }) => {
       )}
       <Fab
         sx={{ position: 'fixed', bottom: '4rem', right: '4rem', zIndex: 2000 }}
+        component={Link}
+        href="/mod/create"
+        target="_blank"
+        rel="noopener noreferrer"
         size="large"
         color="primary"
-        onClick={() => navigate('/mod/create')}
       >
         <Add />
       </Fab>

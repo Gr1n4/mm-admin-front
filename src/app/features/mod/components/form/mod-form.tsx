@@ -1,10 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 import { Option } from '@/types';
 import { Box, Button, Checkbox, Chip, FormControlLabel, MenuItem, Select, Stack, TextField } from '@mui/material';
 import { ImageUploader } from '@/components';
 import { ModCreatePayload, ModType } from '../../mod.types';
+import * as R from 'ramda';
+import { ObjectSchema, number, object, string } from 'yup';
 
 interface CreateForm {
   type: ModType;
@@ -28,6 +31,7 @@ interface CreateForm {
 
 interface ModFormProps {
   defaultValues: CreateForm;
+  validationSchema?: ObjectSchema<CreateForm>;
   onSubmit: (data: ModCreatePayload) => void;
 }
 
@@ -48,16 +52,34 @@ function useFilePreview(file: Option<File | string>): string {
   return url;
 }
 
-export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
+const validationSchemaDefault = object({
+  nameRu: string().required(),
+  nameEn: string().required(),
+  descRu: string().required(),
+  descEn: string().required(),
+  videoUrlRu: string().url().required(),
+  videoUrlEn: string().url().required(),
+  version: string().required(),
+  cost: number().required().min(0).integer(),
+});
+
+export const ModForm: FC<ModFormProps> = ({ defaultValues, validationSchema = validationSchemaDefault, onSubmit }) => {
   const [tagItem, setTagItem] = useState('');
-  const { control, register, handleSubmit, getValues, setValue } = useForm<CreateForm>({
+  const {
+    control,
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<CreateForm>({
     defaultValues,
+    resolver: yupResolver(validationSchema),
   });
+  console.log('errors: %o', errors);
   const values = getValues();
   const pictureUrl = useFilePreview(values.picture);
 
   const handleFormSubmit = (data: CreateForm): void => {
-    console.log('data: %o', data);
     const {
       type,
       nameRu,
@@ -68,7 +90,6 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
       videoUrlEn,
       version,
       cost,
-      priority,
       isNew,
       isRewarded,
       isRewardedEng,
@@ -84,7 +105,6 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
       videoUrl: { ru: videoUrlRu, en: videoUrlEn },
       version,
       cost,
-      priority: parseInt(priority, 10),
       isNew,
       isRewarded,
       isRewardedEng,
@@ -100,15 +120,6 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
     onSubmit(newData);
   };
 
-  const handleDelete = (index: number) => () => {
-    setValue('tags', values.tags.slice(index, 1));
-  };
-
-  const handleAddTag = (e): void => {
-    e.preventDefault();
-    e.stopPropagation();
-    setValue('tags', [...values.tags, tagItem]);
-  };
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)}>
       <Stack spacing={4}>
@@ -124,25 +135,74 @@ export const ModForm: FC<ModFormProps> = ({ defaultValues, onSubmit }) => {
             </Select>
           )}
         />
-        <TextField label="Название на русском" {...register('nameRu', { required: true })} />
-        <TextField label="Название на английском" {...register('nameEn', { required: true })} />
-        <TextField label="Описание на русском" multiline maxRows={4} {...register('descRu', { required: true })} />
-        <TextField label="Описание на английском" multiline maxRows={4} {...register('descEn', { required: true })} />
-        <TextField label="Ссылка на youtube ru" {...register('videoUrlRu')} />
-        <TextField label="Ссылка на youtube en" {...register('videoUrlEn')} />
-        <TextField label="Версия" {...register('version')} />
-        <TextField label="Цена" {...register('cost')} />
-        <TextField label="Приоритет" {...register('priority')} />
+        <TextField
+          label="Название на русском"
+          error={!!errors.nameRu?.message}
+          helperText={errors.nameRu?.message}
+          {...register('nameRu', { required: true })}
+        />
+        <TextField
+          label="Название на английском"
+          error={!!errors.nameEn?.message}
+          helperText={errors.nameEn?.message}
+          {...register('nameEn', { required: true })}
+        />
+        <TextField
+          label="Описание на русском"
+          error={!!errors.descRu?.message}
+          helperText={errors.descRu?.message}
+          multiline
+          maxRows={4}
+          {...register('descRu', { required: true })}
+        />
+        <TextField
+          label="Описание на английском"
+          error={!!errors.descEn?.message}
+          helperText={errors.descEn?.message}
+          multiline
+          maxRows={4}
+          {...register('descEn', { required: true })}
+        />
+        <TextField
+          label="Ссылка на youtube ru"
+          error={!!errors.videoUrlRu?.message}
+          helperText={errors.videoUrlRu?.message}
+          {...register('videoUrlRu')}
+        />
+        <TextField
+          label="Ссылка на youtube en"
+          error={!!errors.videoUrlEn?.message}
+          helperText={errors.videoUrlEn?.message}
+          {...register('videoUrlEn')}
+        />
+        <TextField
+          label="Версия"
+          error={!!errors.version?.message}
+          helperText={errors.version?.message}
+          {...register('version')}
+        />
+        <TextField
+          label="Цена"
+          error={!!errors.cost?.message}
+          helperText={errors.cost?.message}
+          {...register('cost')}
+        />
         <FormControlLabel control={<Checkbox {...register('isNew')} />} label="Новый" />
         <FormControlLabel control={<Checkbox {...register('isRewarded')} />} label="Награжден" />
         <FormControlLabel control={<Checkbox {...register('isRewardedEng')} />} label="Награжден en" />
-        <Box>
-          <TextField label="Тэги" value={tagItem} onChange={(e) => setTagItem(e.target.value)} />
-          <Button onClick={handleAddTag}>Добавить тэг</Button>
-          {values.tags.map((tag, i) => (
-            <Chip key={i} label={tag} onDelete={handleDelete(i)} />
-          ))}
-        </Box>
+        <Controller
+          name="tags"
+          control={control}
+          render={({ field }) => (
+            <Box>
+              <TextField label="Тэги" value={tagItem} onChange={(e) => setTagItem(e.target.value)} />
+              <Button onClick={() => field.onChange([...field.value, tagItem])}>Добавить тэг</Button>
+              {field.value.map((tag, i) => (
+                <Chip key={i} label={tag} onDelete={() => field.onChange(R.remove(i, 1, field.value))} />
+              ))}
+            </Box>
+          )}
+        />
         <Controller
           name="picture"
           control={control}

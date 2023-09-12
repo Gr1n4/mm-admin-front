@@ -1,36 +1,23 @@
 import { getUserSelector, isAccept } from '@/features/auth';
 import { UserRole } from '@/types';
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Typography } from '@mui/material';
+import { Box, Button, Card, CardActions, CardContent, CardMedia, Link, Typography } from '@mui/material';
 import { FC } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { removeByIdModAction } from '../../mod.action';
 import { byIdModSelector } from '../../mod.selector';
-import { ModEntity } from '../../mod.types';
 
 interface CardProps {
-  item: string;
-  dnd: any;
+  modId: string;
+  onRemove: (id: string) => void;
 }
 
-export const ModCard: FC<CardProps> = ({ item, dnd }) => {
+export const ModCard: FC<CardProps> = ({ modId, onRemove }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const user = useSelector(getUserSelector);
-  const mod = useSelector((state) => byIdModSelector(state, item));
-
-  const handlerRemove = () => {
-    dispatch(removeByIdModAction.started(mod.id));
-  };
+  const mod = useSelector((state) => byIdModSelector(state, modId));
 
   return (
-    <Card
-      sx={{ display: 'flex' }}
-      style={{ ...dnd.item.styles, ...dnd.handler.styles }}
-      className={dnd.item.classes}
-      ref={dnd.item.ref}
-      {...dnd.handler.listeners}
-    >
+    <Card sx={{ display: 'flex' }}>
       <CardMedia sx={{ width: '19rem' }} component="img" image={mod.picture.url} alt={mod.picture.originalName} />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <CardContent sx={{ flex: '1 0 auto' }}>
@@ -44,13 +31,11 @@ export const ModCard: FC<CardProps> = ({ item, dnd }) => {
         </CardContent>
         <CardActions>
           {user && isAccept(user.role, UserRole.ADMIN) ? (
-            <Button size="small" onClick={handlerRemove}>
+            <Button size="small" onClick={() => onRemove(modId)}>
               Удалить
             </Button>
           ) : null}
-          <Button size="small" onClick={() => navigate(`/mod/edit/${mod.id}`)}>
-            Редактировать
-          </Button>
+          <Button component={Link} href={`/mod/edit/${mod.id}`} target="_blank" rel="noopener noreferrer">Редактировать</Button>
         </CardActions>
       </Box>
     </Card>

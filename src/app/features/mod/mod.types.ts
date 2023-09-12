@@ -20,7 +20,6 @@ export interface ModEntity {
   readonly isRewardedEng: boolean;
   readonly likes: number;
   readonly downloads: number;
-  readonly priority: number;
   readonly picture: PictureEntity;
   readonly file: FileEntity;
   readonly tags: string[];
@@ -37,7 +36,6 @@ export interface ModCreatePayload {
   readonly isNew: boolean;
   readonly isRewarded: boolean;
   readonly isRewardedEng: boolean;
-  readonly priority: number;
   picture?: File;
   file?: File;
   readonly tags: string[];
